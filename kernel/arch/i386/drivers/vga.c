@@ -137,7 +137,7 @@ static uint16_t fb_read_cell(unsigned int pos)
 }
 
 /**
- * 	Simulates a scroll up by copying every line's data to the line above 
+ * 	Simulates a scroll up by copying every line's data to the line above
  * 	and clearing the last line.
 */
 static void fb_scroll_up()
@@ -188,10 +188,10 @@ void fb_writechar(char c)
 	
 	case('\n'):
 		/* jump to the framebuffer's next line */
-		cursor_pos = (cursor_pos/FB_WIDTH + 1) * FB_WIDTH; 
+		cursor_pos = (cursor_pos/FB_WIDTH + 1) * FB_WIDTH;
 		break;
 
-	case('\b'): 
+	case('\b'):
 		/* clean and move to previous cell (if not it the first one) */
 		if (cursor_pos)
 			fb_write_cell(--cursor_pos, 0, BLACK, WHITE);

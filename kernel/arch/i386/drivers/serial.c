@@ -53,7 +53,7 @@
 															// bit 2    - Stop Bits                      (1, 1.5 or 2)
 															// bits 1:0 - Data Word Length               (5, 6, 7, 8)
 
-/* This register allows you to do "hardware" flow control, under software control. */                         
+/* This register allows you to do "hardware" flow control, under software control. */
 #define SERIAL_MODEM_COMMAND_PORT(base)     (base + 4)      // bits 6:7 - Reserved
 															// bit 5    - Enable Autoflow Control
 															// bit 4    - Loopback Mode
@@ -110,7 +110,7 @@ int serial_init()
 	outb(SERIAL_FIFO_COMMAND_PORT(com), 0xC7);         // Enable FIFO, clear them, with 14-byte threshold
 	outb(SERIAL_MODEM_COMMAND_PORT(com), 0x1E);        // Set in loopback mode, test the serial chip
 	outb(SERIAL_DATA_PORT(com), 0xAE);                 // Test serial chip (send byte 0xAE and check if serial returns same byte)
- 
+
 	// Check if serial is faulty (i.e: not same byte as sent)
 	if (inb(SERIAL_DATA_PORT(com)) != 0xAE)
 	   return -1;

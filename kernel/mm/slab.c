@@ -371,7 +371,7 @@ static slab_t* slab_get(kmem_cache_t* cache)
  * The slab is not removed from the cache's corresponding list.
  * 
  * @param cache the cache that the slab belongs to
- * @param slab the slab to be destroyed 
+ * @param slab the slab to be destroyed
 */
 static void slab_destroy(kmem_cache_t* cache, slab_t* slab)
 {

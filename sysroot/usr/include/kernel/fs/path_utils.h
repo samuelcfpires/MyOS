@@ -37,7 +37,7 @@ size_t format_path(const char* src, const char* cwd, char* dst, size_t max_len);
  * @param max_len the maximum length (null character included)
  * 
  * @return true if the path in the given directory array is valid
- */ 
+ */
 bool is_valid_filename(const char* filename, const char* forbidden_chars, size_t max_len);
 
 /**

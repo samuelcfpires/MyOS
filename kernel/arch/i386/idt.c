@@ -111,7 +111,7 @@ static void encode_igd(unsigned int vector_id, uint32_t handler, uint8_t flags, 
 	idt[vector_id].flags_and_type = (uint8_t) ((flags << 4) | (type & 0x0F));
 }
 
-/* Interrupt Descriptor Table Pseudo-Descriptor 
+/* Interrupt Descriptor Table Pseudo-Descriptor
  *  bits 36:16 - the Interrupt Descriptor Table's base address
  *  bits 15:0  - the Interrupt Descriptor Table's size
 */

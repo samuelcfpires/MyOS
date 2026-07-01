@@ -2,7 +2,7 @@
 ;
 ; Refer to:
 ; https://wiki.osdev.org/Higher_Half_bare_bones
-; 
+;
 ; @author Samuel Pires
 
 MULTIBOOT_PAGE_ALIGN   equ 1<<0

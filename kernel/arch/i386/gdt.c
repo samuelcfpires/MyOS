@@ -88,7 +88,7 @@ struct tss {
 	uint32_t   ssp[2];
 };
 
-/* Global Descriptor Table 
+/* Global Descriptor Table
  * Except for a null descriptor in the fist position, this format is not global for all GDTs.
  * It's especially made to have a Flat-Memory Model, which essentially means there is no segmentation.
 */
@@ -141,7 +141,7 @@ static void encode_segment_descriptor(uint8_t entry[8], uint32_t base, uint32_t 
 	entry[5] = (uint8_t) access_byte;
 }
 
-/* Global Descriptor Table Pseudo-Descriptor 
+/* Global Descriptor Table Pseudo-Descriptor
  *  bits 36:16 - the Global Descriptor Table's base address
  *  bits 15:0 -  the Global Descriptor Table's size
 */

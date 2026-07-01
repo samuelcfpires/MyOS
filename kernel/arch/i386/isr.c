@@ -1,7 +1,7 @@
 /**
  * Code for handling all the different Interrupt Service Routines.
  * 
- * Complement to isr_entry.S which serves as an entry point to and passes all ISRs 
+ * Complement to isr_entry.S which serves as an entry point to and passes all ISRs
  * through a common function, uniformising them before redirecting them here.
  * 
  * Refer to:

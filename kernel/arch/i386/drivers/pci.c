@@ -138,7 +138,7 @@ static void detect_connected_devices(void)
 static pci_device_descriptor_t* create_device_descriptor(uint8_t bus, uint8_t device, uint8_t function)
 {
 	pci_device_descriptor_t* pdd = kmalloc(sizeof(pci_device_descriptor_t));
-    
+
     pdd->bus = bus;
     pdd->device = device;
     pdd->function = function;
@@ -152,6 +152,6 @@ static pci_device_descriptor_t* create_device_descriptor(uint8_t bus, uint8_t de
 
     pdd->revision = pci_config_read(bus, device, function, 0x08);
     pdd->interrupt = pci_config_read(bus, device, function, 0x3C);
-    
+
     return pdd;
 }
