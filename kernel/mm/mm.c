@@ -18,6 +18,9 @@
 
 extern char _kernel_end_physical;
 
+page_t* mem_map;
+size_t mem_map_length;
+
 /* A variable must be defined for boot sequence */
 const unsigned long low_mem_num_pages = HIGH_MEM_PFN;
 

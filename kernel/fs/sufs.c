@@ -341,7 +341,7 @@ void sufs_dump_dir_tree(void)
 {
 	struct dir {
 		struct sufs_dinode inode;
-		char name[SUFS_MAX_FILENAME_LEN + 1];
+		char name[SUFS_MAX_FILENAME_LEN];
 	};
 
 	struct dir* curr_dir = kmalloc(sizeof(struct dir));
@@ -370,7 +370,7 @@ void sufs_dump_dir_tree(void)
 					if (j >= 2 && inode.di_mode & IFDIR) {
 						struct dir* new_dir = kmalloc(sizeof(struct dir));
 						memcpy(&new_dir->inode, &inode, sizeof(struct sufs_dinode));
-						if (snprintf(new_dir->name, SUFS_MAX_FILENAME_LEN + 1, "%s/%s", curr_dir->name, dentries[j].de_name) > SUFS_MAX_FILENAME_LEN) {
+						if (snprintf(new_dir->name, SUFS_MAX_FILENAME_LEN, "%s/%s", curr_dir->name, dentries[j].de_name) >= SUFS_MAX_FILENAME_LEN) {
 							printf("Error: child name exceeds max length. Stopping.\n");
 							goto ret;
 						}
@@ -431,8 +431,7 @@ static uint32_t search_dir(const struct sufs_dinode* dir_inode, const char* name
 
 		struct sufs_dentry* dentries = block_buf;
 		for (uint32_t j = 0; j < sb.sb_dentpb; j++) {
-			if (dentries[j].de_inum > 0 &&
-					!strncmp(dentries[j].de_name, name, SUFS_MAX_FILENAME_LEN))
+			if (dentries[j].de_inum > 0 && !strncmp(dentries[j].de_name, name, SUFS_MAX_FILENAME_LEN - 1))
 				return dentries[j].de_inum;
 		}
 	}
@@ -449,7 +448,7 @@ static uint32_t search_dir(const struct sufs_dinode* dir_inode, const char* name
  * 
  * @param dir_inode the inode of the directory
  * @param inum the inode number of the entry to write
- * @param name the name of the entry to write
+ * @param name a null-terminated string containing the name of the entry to write
  * 
  * @return 0 on success, -1 on failure
  */
@@ -464,8 +463,8 @@ static int write_to_dir(struct sufs_dinode* dir_inode, uint32_t inum, const char
 		for (uint32_t j = 0; j < sb.sb_dentpb; j++) {
 			if (dentries[j].de_inum == 0) {
 				dentries[j].de_inum = inum;
-				strncpy(dentries[j].de_name, name, SUFS_MAX_FILENAME_LEN);
-				dentries[j].de_name[SUFS_MAX_FILENAME_LEN] = '\0';
+				strncpy(dentries[j].de_name, name, SUFS_MAX_FILENAME_LEN - 1);
+				dentries[j].de_name[SUFS_MAX_FILENAME_LEN - 1] = '\0';
 
 				dev_write_block(block_buf, block_idx);
 				return 0;
@@ -484,7 +483,8 @@ static int write_to_dir(struct sufs_dinode* dir_inode, uint32_t inum, const char
 	memset(block_buf, 0, sb.sb_block_size);
 	struct sufs_dentry* dentry = block_buf;
 	dentry->de_inum = inum;
-	strncpy(dentry->de_name, name, SUFS_MAX_FILENAME_LEN);
+	strncpy(dentry->de_name, name, SUFS_MAX_FILENAME_LEN - 1);
+	dentry->de_name[SUFS_MAX_FILENAME_LEN - 1] = '\0';
 
 	dev_write_block(block_buf, block_idx);
 	return 0;
@@ -632,7 +632,7 @@ static uint32_t alloc_data_block(struct sufs_dinode* inode, uint32_t idx)
 static int create_file(char* path, int mode)
 {
 	char* name = strrchr(path, PATH_SEPARATOR) + 1;
-	if (strlen(name) > SUFS_MAX_FILENAME_LEN) {
+	if (strlen(name) >= SUFS_MAX_FILENAME_LEN) {
 		fs_errno = ENAMETOOLONG;
 		return -1;
 	}
@@ -722,7 +722,7 @@ static int create_file(char* path, int mode)
 static int delete_file(char* path, bool is_dir)
 {
 	char* name = strrchr(path, PATH_SEPARATOR) + 1;
-	if (strlen(name) > SUFS_MAX_FILENAME_LEN) {
+	if (strlen(name) >= SUFS_MAX_FILENAME_LEN) {
 		fs_errno = ENAMETOOLONG;
 		return -1;
 	}
@@ -828,8 +828,9 @@ static void iput(struct sufs_dinode* inode)
  * 
  * If iout is NULL, an inode is allocated.
  * 
- * @param path the path to be converted
+ * @param path a null-terminated string containing the path to be converted
  * @param iout a pointer to hold the inode (can be NULL)
+ * 
  * 
  * @return a pointer to the inode or NULL if the file doesn't exist
  */

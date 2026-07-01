@@ -89,7 +89,8 @@ struct sufs_dinode {
 };
 
 
-#define SUFS_MAX_FILENAME_LEN	28
+/* Maximum filename length, including null terminator */
+#define SUFS_MAX_FILENAME_LEN 28
 
 struct sufs_dentry {
 	uint32_t de_inum;						/* inode number */

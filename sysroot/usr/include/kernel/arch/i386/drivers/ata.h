@@ -27,11 +27,11 @@ typedef struct ata_dev_s {
 
 /* An array of connected ATA devices */
 /* Only the first num_ata_devs devices are valid. */
-ata_dev_t ata_devs[4];
+extern ata_dev_t ata_devs[4];
 
 /* Number of connected ATA devices. */
 /* The device ID passed to the write and read functions must be lower than this. */
-unsigned char num_ata_devs;
+extern unsigned char num_ata_devs;
 
 
 #define ATA_NUM_SECTORS(dev) ({ __typeof__(dev) _dev = (dev); MAX(_dev->lba28_num_sectors, _dev->lba48_num_sectors); })

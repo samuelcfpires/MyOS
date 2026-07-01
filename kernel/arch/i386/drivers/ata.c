@@ -60,8 +60,12 @@
 #define LBA48_MAX_SECTOR_COUNT	65536
 
 
+ata_dev_t ata_devs[4];
+
+unsigned char num_ata_devs;
+
 /* The ID of the currently selected device */
-unsigned char selected_dev_id;
+static unsigned char selected_dev_id;
 
 
 static int ata_dev_init(ata_dev_t* dev, uint16_t port_base, bool master);

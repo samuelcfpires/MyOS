@@ -36,8 +36,8 @@ typedef struct page_s
 #define HIGH_MEM_START		(896 * (1 << 20))	/* 896MB */
 #define HIGH_MEM_PFN		(HIGH_MEM_START / PAGE_SIZE)
 
-page_t* mem_map;
-size_t mem_map_length;
+extern page_t* mem_map;
+extern size_t mem_map_length;
 
 #define phys_to_page(p)		((page_t*) (mem_map + ((uintptr_t)(p)) / PAGE_SIZE))
 #define virt_to_page(v)		((page_t*) (phys_to_page(V2P((uintptr_t)(v)))))
