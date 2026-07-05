@@ -9,7 +9,11 @@
  * @author Samuel Pires
 */
 
+#include <kernel/arch/i386/system.h>
+
 #include <stdint.h>
+#include <string.h>
+#include <stdio.h>
 
 #define FLAT_MODEL_BASE 						0x0
 #define FLAT_MODEL_LIMIT 						0xFFFFF
@@ -24,71 +28,42 @@
 
 
 extern void load_kernel_segments(void);
+extern void flush_tss(void);
 
 
 /* Task State Segment */
-struct tss {
-	uint32_t   link;
-	uint32_t   res1;
+struct tss_entry {
+	uint32_t prev_tss; // The previous TSS - with hardware task switching these form a kind of backward linked list.
+	uint32_t esp0;     // The stack pointer to load when changing to kernel mode.
+	uint32_t ss0;      // The stack segment to load when changing to kernel mode.
+	// Everything below here is unused.
+	uint32_t esp1; // esp and ss 1 and 2 would be used when switching to rings 1 or 2.
+	uint32_t ss1;
+	uint32_t esp2;
+	uint32_t ss2;
+	uint32_t cr3;
+	uint32_t eip;
+	uint32_t eflags;
+	uint32_t eax;
+	uint32_t ecx;
+	uint32_t edx;
+	uint32_t ebx;
+	uint32_t esp;
+	uint32_t ebp;
+	uint32_t esi;
+	uint32_t edi;
+	uint32_t es;
+	uint32_t cs;
+	uint32_t ss;
+	uint32_t ds;
+	uint32_t fs;
+	uint32_t gs;
+	uint32_t ldt;
+	uint16_t trap;
+	uint16_t iomap_base;
+} tss;
 
-	uint32_t   esp0[2];
-
-	uint32_t   ss0;
-	uint32_t   res2;
-
-	uint32_t   esp1[2];
-
-	uint32_t   ss1;
-	uint32_t   res3;
-
-	uint32_t   esp2[2];
-
-	uint32_t   ss2;
-	uint32_t   res4;
-
-	uint32_t   cr3[2];
-
-	uint32_t   eip[2];
-
-	uint32_t   eflags[2];
-
-	uint32_t   eax[2];
-	uint32_t   ecx[2];
-	uint32_t   edx[2];
-	uint32_t   ebx[2];
-	uint32_t   esp[2];
-	uint32_t   ebp[2];
-	uint32_t   esi[2];
-	uint32_t   edi[2];
-
-	uint32_t   es;
-	uint32_t   res5;
-	
-	uint32_t   cs;
-	uint32_t   res6;
-
-	uint32_t   ss;
-	uint32_t   res7;
-
-	uint32_t   ds;
-	uint32_t   res8;
-
-	uint32_t   fs;
-	uint32_t   res9;
-
-	uint32_t   gs;
-	uint32_t   res10;
-
-	uint32_t   ldt;
-	uint32_t   res11;
-
-	uint32_t   trap;
-	uint32_t   iomap;
-	
-	uint32_t   ssp[2];
-};
-
-/* Global Descriptor Table
+/* Global Descriptor Table 
  * Except for a null descriptor in the fist position, this format is not global for all GDTs.
  * It's especially made to have a Flat-Memory Model, which essentially means there is no segmentation.
 */
@@ -99,10 +74,7 @@ struct gdt {
 	uint8_t user_mode_code_segment[8];
 	uint8_t user_mode_data_segment[8];
 	uint8_t task_state_segment[8];
-};
-
-static struct tss tss;
-static struct gdt gdt;
+} gdt;
 
 /* Segment Descriptor structure:
 *	bits 63:56 - Base Address [31:24]
@@ -141,20 +113,25 @@ static void encode_segment_descriptor(uint8_t entry[8], uint32_t base, uint32_t 
 	entry[5] = (uint8_t) access_byte;
 }
 
-/* Global Descriptor Table Pseudo-Descriptor
+/* Global Descriptor Table Pseudo-Descriptor 
  *  bits 36:16 - the Global Descriptor Table's base address
  *  bits 15:0 -  the Global Descriptor Table's size
 */
 static uint16_t gdtd[3];
 
+extern void kernel_end_of_stack(void); 
+
 void gdt_init(void)
 {
+	tss.ss0 = 0x10;
+	tss.esp0 = (uint32_t)kernel_end_of_stack;
+
 	encode_segment_descriptor(gdt.null_descriptor, 0x0, 0x0, 0x0, 0x0);
 	encode_segment_descriptor(gdt.kernel_mode_code_segment, FLAT_MODEL_BASE, FLAT_MODEL_LIMIT, KERNEL_MODE_CODE_SEGMENT_ACCESS_BYTE, LEGACY_MODE_SEGMENT_FLAGS);
 	encode_segment_descriptor(gdt.kernel_mode_data_segment, FLAT_MODEL_BASE, FLAT_MODEL_LIMIT, KERNEL_MODE_DATA_SEGMENT_ACCESS_BYTE, LEGACY_MODE_SEGMENT_FLAGS);
 	encode_segment_descriptor(gdt.user_mode_code_segment, FLAT_MODEL_BASE, FLAT_MODEL_LIMIT, USER_MODE_CODE_SEGMENT_ACCESS_BYTE, LEGACY_MODE_SEGMENT_FLAGS);
 	encode_segment_descriptor(gdt.user_mode_data_segment, FLAT_MODEL_BASE, FLAT_MODEL_LIMIT, USER_MODE_DATA_SEGMENT_ACCESS_BYTE, LEGACY_MODE_SEGMENT_FLAGS);
-	encode_segment_descriptor(gdt.task_state_segment, (uint32_t) &tss, sizeof(struct tss), TASK_STATE_SEGMENT_ACCESS_BYTE, 0x0);
+	encode_segment_descriptor(gdt.task_state_segment, (uint32_t)&tss, sizeof(struct tss_entry)-1, TASK_STATE_SEGMENT_ACCESS_BYTE, 0x0);
 
 	gdtd[2] = (uint16_t) (((uint32_t) &gdt >> 16) & 0xFFFF);
 	gdtd[1] = (uint16_t) ((uint32_t) &gdt & 0xFFFF);
@@ -163,6 +140,4 @@ void gdt_init(void)
 	asm volatile("lgdt [%0]" : : "r" (gdtd));
 	
 	load_kernel_segments();
-	//enable_fast_system_calls();
 }
-

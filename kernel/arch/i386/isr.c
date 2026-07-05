@@ -1,7 +1,7 @@
 /**
  * Code for handling all the different Interrupt Service Routines.
  * 
- * Complement to isr_entry.S which serves as an entry point to and passes all ISRs
+ * Complement to isr_entry.S which serves as an entry point to and passes all ISRs 
  * through a common function, uniformising them before redirecting them here.
  * 
  * Refer to:
@@ -12,9 +12,11 @@
 
 #include <kernel/arch/i386/drivers/pic.h>
 #include <kernel/arch/i386/drivers/keyboard.h>
+#include <kernel/arch/i386/system.h>
 #include <kernel/syscall.h>
 
 #include <stdint.h>
+#include <stdio.h>
 
 #define PIC_OFFSET 32
 
@@ -28,6 +30,9 @@ struct isr_frame {
 
 void isr_handler(struct isr_frame isr_frame)
 {
+	//printf("Interrupt: %d\n", isr_frame.vector_id);
+	//BOCHS_MAGIC_BREAKPOINT;
+
 	switch(isr_frame.vector_id) {
 		case(0): break;
 		case(1): break;
@@ -80,7 +85,7 @@ void isr_handler(struct isr_frame isr_frame)
 		case(46): pic_send_eoi(isr_frame.vector_id - PIC_OFFSET); break;
 		case(47): pic_send_eoi(isr_frame.vector_id - PIC_OFFSET); break;
 
-		case(0x80): syscall_handler(isr_frame.regs[7]); break;
+		case(0x80): printf("1\n"); syscall_handler(isr_frame.regs[7]); break;
 
 		default: break;
 	}

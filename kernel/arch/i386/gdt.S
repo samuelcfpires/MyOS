@@ -3,10 +3,12 @@
 ; @author Samuel Pires
 
 
-extern syscall_entry
+extern user_func
 
 global load_kernel_segments
+global flush_tss
 global enable_fast_system_calls
+global jump_to_user_func
 
 
 load_kernel_segments:
@@ -26,21 +28,29 @@ flush_cs:
 	; cs is now 0x08
 	ret
 
+flush_tss:
+	mov ax, (5 * 8) | 0
+	ltr ax
+	ret
 
-enable_fast_system_calls:
+
+jump_to_user_func:
+	call flush_tss
+
+	; set registers to the users's data segment
+	mov ax, (4 * 8) | 3
+	mov ds, ax
+	mov es, ax
+	mov fs, ax
+	mov gs, ax
+
 	xor edx, edx
-
-	; Set the previlege level 0 code segment to IA32_SYSENTER_CS
-	mov eax, 0x08
+	mov eax, (3 * 8) | 3
 	mov ecx, 0x174
 	wrmsr
 
-	; Set the sysenter entry point (instruction pointer)
-	mov eax, syscall_entry
-	mov ecx, 0x176
-	wrmsr
+	mov edx, user_func
+	mov ecx, esp
 
-	; Set the sysenter previlege level 0 stack pointer
-	mov eax, 0x0
-	mov ecx, 0x175
-	wrmsr
+	xchg bx, bx
+	sysexit

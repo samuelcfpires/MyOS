@@ -15,6 +15,7 @@
 #include <kernel/arch/i386/drivers/pci.h>
 #include <kernel/arch/i386/drivers/ata.h>
 #include <kernel/arch/i386/io.h>
+#include <kernel/arch/i386/system.h>
 
 #include <stdio.h>
 #include <stdint.h>
@@ -24,6 +25,7 @@
 
 extern void gdt_init(void);
 extern void idt_init(void);
+extern void jump_to_user_func(void);
 
 
 int kmain(multiboot_info_t* mbi, uint32_t magic)
@@ -58,6 +60,8 @@ int kmain(multiboot_info_t* mbi, uint32_t magic)
 	}
 
 	printf("Finished Loading\n");
+
+	//jump_to_user_func();
 
 	return 0;
 }

@@ -25,6 +25,7 @@ dd CHECKSUM
 ; Allocate the initial stack.
 section .bootstrap_stack write nobits
 align 16
+global kernel_end_of_stack
 kernel_end_of_stack:
 	resb 16384
 kernel_stack_bottom:
