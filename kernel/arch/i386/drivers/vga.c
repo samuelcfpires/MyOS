@@ -186,12 +186,12 @@ void fb_writechar(char c)
 {
 	switch (c) {
 	
-	case('\n'):
+	case '\n':
 		/* jump to the framebuffer's next line */
 		cursor_pos = (cursor_pos/FB_WIDTH + 1) * FB_WIDTH;
 		break;
 
-	case('\b'):
+	case '\b':
 		/* clean and move to previous cell (if not it the first one) */
 		if (cursor_pos)
 			fb_write_cell(--cursor_pos, 0, BLACK, WHITE);

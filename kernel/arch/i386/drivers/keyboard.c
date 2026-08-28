@@ -111,42 +111,42 @@ static uint8_t read_special_key(uint8_t scan_code, bool had_extended_byte)
 	switch (scan_code) {
 
 	/* enable special key flag when key is pressed */
-	case(SCANCODE_LSHIFT):
+	case (SCANCODE_LSHIFT):
 		special_keys_flags |= FLAG_LSHIFT;
 		break;
 
 	/* disable special key flag when key is released (scan_code's most significant bit is set) */
-	case(SCANCODE_LSHIFT | 0x80):
+	case (SCANCODE_LSHIFT | 0x80):
 		special_keys_flags &= ~FLAG_LSHIFT;
 		break;
 
-	case(SCANCODE_RSHIFT):
+	case (SCANCODE_RSHIFT):
 		special_keys_flags |= FLAG_RSHIFT;
 		break;
 
-	case(SCANCODE_RSHIFT | 0x80):
+	case (SCANCODE_RSHIFT | 0x80):
 		special_keys_flags &= ~FLAG_RSHIFT;
 		break;
 
 	/* find out whether left or right key was pressed based on if the extended byte was received or not */
-	case(SCANCODE_CTRL):
+	case (SCANCODE_CTRL):
 		special_keys_flags |= (had_extended_byte ? FLAG_RCTRL : FLAG_LCTRL);
 		break;
 
-	case(SCANCODE_CTRL | 0x80):
+	case (SCANCODE_CTRL | 0x80):
 		special_keys_flags &= ~(had_extended_byte ? FLAG_RCTRL : FLAG_LCTRL);
 		break;
 
-	case(SCANCODE_ALT):
+	case (SCANCODE_ALT):
 		special_keys_flags |= (had_extended_byte ? FLAG_RALT : FLAG_LALT);
 		break;
 
-	case(SCANCODE_ALT | 0x80):
+	case (SCANCODE_ALT | 0x80):
 		special_keys_flags &= ~(had_extended_byte ? FLAG_RALT : FLAG_LALT);
 		break;
 	
 	/* use xor for toggling lock keys */
-	case(SCANCODE_CAPS):
+	case (SCANCODE_CAPS):
 		special_keys_flags ^= FLAG_CAPS;
 		break;
 
