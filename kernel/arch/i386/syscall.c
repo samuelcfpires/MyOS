@@ -10,17 +10,12 @@
 #include <stdio.h>
 
 
-void myexit()
-{
-	printf("Exited program\n");
-	STOP;
-}
-
 void syscall_handler(int syscall_num)
 {
-	switch(syscall_num) {
-		case(1): myexit(); break;
-		case(2): printf("syscall test\n"); break;
-		default: break;
+	switch (syscall_num) {
+	default:
+		printf("Unhandled syscall: %d\n", syscall_num);
+		STOP;
+		break;
 	}
 }

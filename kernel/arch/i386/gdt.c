@@ -140,4 +140,5 @@ void gdt_init(void)
 	asm volatile("lgdt [%0]" : : "r" (gdtd));
 	
 	load_kernel_segments();
+	flush_tss();
 }

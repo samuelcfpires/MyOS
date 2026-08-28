@@ -61,6 +61,8 @@ extern void interrupt_handler_45();
 extern void interrupt_handler_46();
 extern void interrupt_handler_47();
 
+extern void interrupt_handler_128();
+
 
 #define HARDWARE_INTERRUPT_ENTRIES   32
 #define IRQ_ENTRIES					 16
@@ -68,6 +70,7 @@ extern void interrupt_handler_47();
 
 #define KERNEL_CODE_SEGMENT_SELECTOR 0x8
 #define HARDWARE_INTERRUPT_FLAGS     0x8
+#define USER_INTERRUPT_FLAGS         0xE
 #define BIT32_INTERRUPT_GATE         0xE
 
 /* Interrupt/Trap Gate Descriptor
@@ -86,7 +89,7 @@ struct igd {
 	uint16_t offset_ub;
 };
 
-static struct igd idt[HARDWARE_INTERRUPT_ENTRIES + IRQ_ENTRIES];
+static struct igd idt[MAX_INTERRUPT_ENTRIES];
 
 /**
  * Encodes the Interrupt Gate Descriptor with the given values.
@@ -168,6 +171,8 @@ void idt_init(void)
 	encode_igd(45, (uint32_t) interrupt_handler_45, HARDWARE_INTERRUPT_FLAGS, BIT32_INTERRUPT_GATE);
 	encode_igd(46, (uint32_t) interrupt_handler_46, HARDWARE_INTERRUPT_FLAGS, BIT32_INTERRUPT_GATE);
 	encode_igd(47, (uint32_t) interrupt_handler_47, HARDWARE_INTERRUPT_FLAGS, BIT32_INTERRUPT_GATE);
+
+	encode_igd(128, (uint32_t) interrupt_handler_128, USER_INTERRUPT_FLAGS, BIT32_INTERRUPT_GATE);
 
 	idtd[2] = (uint16_t) (((uint32_t) idt >> 16) & 0xFFFF);
 	idtd[1] = (uint16_t) ((uint32_t) idt & 0xFFFF);

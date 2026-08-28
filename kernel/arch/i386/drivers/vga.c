@@ -184,7 +184,7 @@ void fb_writestring(const char* data)
 
 void fb_writechar(char c)
 {
-	switch(c) {
+	switch (c) {
 	
 	case('\n'):
 		/* jump to the framebuffer's next line */

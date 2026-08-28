@@ -12,3 +12,4 @@ isodir
 
 # Other
 utils/logs
+**/bx_enh_dbg.ini

@@ -84,4 +84,4 @@ no_error_isr 46
 no_error_isr 47
 
 ; Kernel IRQs
-no_error_isr 0x80
+no_error_isr 128	; syscall
