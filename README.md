@@ -3,7 +3,7 @@
 This is my personal OS project.
 
 ## Installing dependencies
-`sudo apt install build-essential libc6-i386 mtools nasm xorriso qemu qemu-system-i386 bochs bochs-sdl bochsbios vgabios grub2`
+`sudo apt install build-essential libc6-i386 mtools nasm xorriso qemu-system-x86 bochs bochs-sdl bochsbios vgabios grub2`
 
 Cross-Compiler: https://github.com/lordmilko/i686-elf-tools
 
